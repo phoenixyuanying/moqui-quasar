@@ -201,7 +201,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
 <#macro "render-mode">
 <#if .node["text"]?has_content>
     <#list .node["text"] as textNode><#if !textNode["@type"]?has_content || textNode["@type"] == "any"><#local textToUse = textNode/></#if></#list>
-    <#list .node["text"] as textNode><#if textNode["@type"]?has_content && textNode["@type"].split(",")?seq_contains(sri.getRenderMode())><#local textToUse = textNode></#if></#list>
+    <#list .node["text"] as textNode><#if textNode["@type"]?has_content && textNode["@type"]?split(",")?seq_contains(sri.getRenderMode())><#local textToUse = textNode></#if></#list>
     <#if textToUse??>
         <#if textToUse["@location"]?has_content>
           <#assign textLocation = ec.getResource().expandNoL10n(textToUse["@location"], "")>
@@ -214,7 +214,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
         <#if inlineTemplateSource?has_content>
           <#if sri.doBoundaryComments() && textToUse["@no-boundary-comment"]! != "true"><!-- BEGIN render-mode.text[inline][@template=${textToUse["@template"]!"true"}] --></#if>
           <#if !textToUse["@template"]?has_content || textToUse["@template"] == "true">
-            <#assign inlineTemplate = [inlineTemplateSource, sri.getActiveScreenDef().location + ".render_mode.text"].interpret>
+            <#assign inlineTemplate = [inlineTemplateSource, sri.getActiveScreenDef().location + ".render_mode.text"]?interpret>
             <@inlineTemplate/>
           <#else>
             <#if .node["@encode"]! == "true">${inlineTemplateSource?html}<#else>${inlineTemplateSource}</#if>
@@ -1421,7 +1421,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
                 <#if linkText?has_content || linkNode["image"]?has_content || linkNode["@icon"]?has_content>
                     <#if linkNode["@encode"]! != "false"><#assign linkText = linkText?html></#if>
                     <#assign linkUrlInfo = sri.makeUrlByType(linkNode["@url"], linkNode["@url-type"]!"transition", linkNode, linkNode["@expand-transition-url"]!"true")>
-                    <#assign linkFormId><@fieldId linkNode/>_${linkNode["@url"].replace(".", "_")}</#assign>
+                    <#assign linkFormId><@fieldId linkNode/>_${linkNode["@url"]?replace(".", "_")}</#assign>
                     <#assign afterFormText><@linkFormForm linkNode linkFormId linkText linkUrlInfo/></#assign>
                     <#t>${sri.appendToAfterScreenWriter(afterFormText)}
                     <#t><@linkFormLink linkNode linkFormId linkText linkUrlInfo/>
@@ -1443,7 +1443,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
 <#-- ================== Form Field Widgets ==================== -->
 <#-- ========================================================== -->
 
-<#macro fieldName widgetNode suffix=""><#assign fieldNode=widgetNode?parent?parent/>${fieldNode["@name"].html}${suffix}<#if isMulti?exists && isMulti && listEntryIndex?has_content && listEntryIndex?matches("\\d*")>_${listEntryIndex}</#if></#macro>
+<#macro fieldName widgetNode suffix=""><#assign fieldNode=widgetNode?parent?parent/>${fieldNode["@name"]?html}${suffix}<#if isMulti?exists && isMulti && listEntryIndex?has_content && listEntryIndex?matches("\\d*")>_${listEntryIndex}</#if></#macro>
 <#macro fieldId widgetNode><#assign fieldNode=widgetNode?parent?parent/><#if fieldFormId?has_content>${fieldFormId}<#else>${ec.getResource().expandNoL10n(fieldNode?parent["@name"], "")}</#if>_${fieldNode["@name"]}<#if listEntryIndex?has_content>_${listEntryIndex}</#if><#if sectionEntryIndex?has_content>_${sectionEntryIndex}</#if></#macro>
 <#macro fieldTitle fieldSubNode><#t>
     <#t><#if (fieldSubNode?node_name == 'header-field')>
@@ -1452,7 +1452,7 @@ ${sri.renderIncludeScreen(.node["@location"], .node["@share-scope"]!)}
         <#local defaultFieldNode = fieldNode["default-field"][0]!>
         <#t><#if headerFieldNode["@title"]?has_content><#local fieldSubNode = headerFieldNode><#elseif defaultFieldNode["@title"]?has_content><#local fieldSubNode = defaultFieldNode></#if>
     </#if>
-    <#t><#assign titleValue><#if fieldSubNode["@title"]?has_content>${ec.getResource().expand(fieldSubNode["@title"], "")}<#else><#list fieldSubNode?parent["@name"].split("(?=[A-Z])", "r") as nameWord>${nameWord?cap_first?replace("Id", "ID")}<#if nameWord_has_next> </#if></#list></#if></#assign>${ec.getL10n().localize(titleValue)}
+    <#t><#assign titleValue><#if fieldSubNode["@title"]?has_content>${ec.getResource().expand(fieldSubNode["@title"], "")}<#else><#list fieldSubNode?parent["@name"]?split("(?=[A-Z])", "r") as nameWord>${nameWord?cap_first?replace("Id", "ID")}<#if nameWord_has_next> </#if></#list></#if></#assign>${ec.getL10n().localize(titleValue)}
 </#macro>
 <#macro fieldIdByName fieldName><#if fieldFormId?has_content>${fieldFormId}<#else>${ec.getResource().expandNoL10n(formNode["@name"], "")}</#if>_${fieldName}<#if listEntryIndex?has_content>_${listEntryIndex}</#if><#if sectionEntryIndex?has_content>_${sectionEntryIndex}</#if></#macro>
 
